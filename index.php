@@ -17,7 +17,7 @@
       $user_query = "select * from users where first_name='".$_POST['username']."' and password='".$_POST['pwd']."'";
       $user = mysqli_query($con,$user_query);
       $user = mysqli_fetch_row($user);
-      if($user != 0){
+      if($user != 1){
         $_SESSION['logged_in'] = $logged_in = true;
         $_SESSION['user_name'] = ucfirst($user[2]);
         $_SESSION['user_id'] = $user[0];
@@ -54,11 +54,14 @@
   </form></fieldset>
   
   <script>
+    window.lastMessageNumber = 0;
+    var message;
   $(document).ready(function(){
     var chatbox = $("#chatbox");
     $("#ChatForm").submit(function(event){event.preventDefault();sendchat(<?php echo $_SESSION['user_id'];?>)})
-    setInterval(updateChat,5000);
+     setInterval(function () {$.get("/chat/get_chats.php?lastMessage="+window.lastMessageNumber,function(data){message = data;updateChat(data)})},5000);
   })
+  
   </script>
   <style>
     span.<?php echo strtolower($_SESSION['user_name']);?>{
